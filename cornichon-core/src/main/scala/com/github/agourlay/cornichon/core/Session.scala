@@ -58,7 +58,7 @@ case class Session(private val content: Map[String, Vector[String]]) extends Any
 
   def getJsonOpt(key: String, stackingIndice: Option[Int] = None): Option[Json] = getOpt(key, stackingIndice).flatMap(s ⇒ parseJson(s).toOption)
 
-  def getList(keys: Seq[String]): Either[CornichonError, List[String]] = keys.toList.traverseU(v ⇒ get(v))
+  def getList(keys: Seq[String]): Either[CornichonError, List[String]] = keys.toList.traverse(v ⇒ get(v))
 
   def getHistory(key: String): Vector[String] = content.getOrElse(key, Vector.empty)
 

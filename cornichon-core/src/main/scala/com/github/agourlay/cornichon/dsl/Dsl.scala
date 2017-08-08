@@ -175,7 +175,7 @@ object Dsl {
       session ⇒ {
         for {
           allValues ← session.getList(keys)
-          extracted ← allValues.zip(extractors).traverseU { case (value, extractor) ⇒ extractor(session, value) }
+          extracted ← allValues.zip(extractors).traverse { case (value, extractor) ⇒ extractor(session, value) }
           x ← targets.zip(extracted).foldLeft(Either.right[CornichonError, Session](session))((s, tuple) ⇒ s.map(_.addValue(tuple._1, tuple._2)))
         } yield x
       }

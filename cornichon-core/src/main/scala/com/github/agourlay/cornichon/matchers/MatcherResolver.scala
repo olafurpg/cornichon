@@ -19,7 +19,7 @@ class MatcherResolver() {
     matchers.find(_.key == m.key).map(Right(_)).getOrElse(Left(MatcherUndefined(m.key)))
 
   def findAllMatchers(input: String): Either[CornichonError, List[Matcher]] =
-    findMatcherKeys(input).flatMap(_.traverseU(resolveMatcherKeys))
+    findMatcherKeys(input).flatMap(_.traverse(resolveMatcherKeys))
 }
 
 object MatcherResolver {

@@ -38,7 +38,7 @@ object JsonSteps {
       title = jsonAssertionTitleBuilder(s"JSON content of key '$k1' is equal to JSON content of key '$k2'", ignoredKeys),
       action = s ⇒ Assertion.either {
         for {
-          ignoredPaths ← ignoredKeys.toList.traverseU(resolveAndParseJsonPath(_, resolver)(s))
+          ignoredPaths ← ignoredKeys.toList.traverse(resolveAndParseJsonPath(_, resolver)(s))
           v1 ← s.getJson(k1).map(removeFieldsByPath(_, ignoredPaths))
           v2 ← s.getJson(k2).map(removeFieldsByPath(_, ignoredPaths))
         } yield GenericEqualityAssertion(v1, v2)
@@ -82,7 +82,7 @@ object JsonSteps {
           whitelistingValue(expected, actual).map(expectedWhitelistedValue ⇒ (expectedWhitelistedValue, actual))
         else if (ignoredKeys.nonEmpty)
           // remove ignore fields from the actual result
-          ignoredKeys.toList.traverseU(resolveAndParseJsonPath(_, resolver)(s)).map { ignoredPaths ⇒
+          ignoredKeys.toList.traverse(resolveAndParseJsonPath(_, resolver)(s)).map { ignoredPaths ⇒
             (expected, removeFieldsByPath(actual, ignoredPaths))
           }
         else
@@ -221,7 +221,7 @@ object JsonSteps {
 
       def removeIgnoredPathFromElements(s: Session, jArray: Vector[Json]) =
         ignoredEachKeys.toList
-          .traverseU(resolveAndParseJsonPath(_, resolver)(s))
+          .traverse(resolveAndParseJsonPath(_, resolver)(s))
           .map(ignoredPaths ⇒ jArray.map(removeFieldsByPath(_, ignoredPaths)))
 
       AssertStep(
@@ -260,7 +260,7 @@ object JsonSteps {
         title = title,
         action = s ⇒ CustomMessageEqualityAssertion.fromSession(s, sessionKey) { (s, sessionValue) ⇒
           applyPathAndFindArray(jsonPath, resolver)(s, sessionValue).flatMap { jArr ⇒
-            elements.toList.traverseU(resolveAndParseJson(_, s, resolver)).map { resolvedJson ⇒
+            elements.toList.traverse(resolveAndParseJson(_, s, resolver)).map { resolvedJson ⇒
               val containsAll = resolvedJson.forall(jArr.contains)
               (expected, containsAll, arrayContainsError(resolvedJson.map(_.show), Json.fromValues(jArr).show, expected))
             }
